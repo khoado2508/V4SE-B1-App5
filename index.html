@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V4SE B1 — App 5 — Reflex Training Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F5FB;
+    --panel:#FFFFFF;
+    --panel-2:#F4F6FC;
+    --line:#E2E6F0;
+    --text:#1C2333;
+    --muted:#6B7488;
+    --primary:#2F5FE0;
+    --primary-2:#547BF5;
+    --gold:#B9791A;
+    --gold-bg:#FFF6E5;
+    --speaking:#E2601F;
+    --listening:#0E86A8;
+    --reading:#7141C9;
+    --writing:#12915E;
+    --bad:#D23A50;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:
+    radial-gradient(1100px 560px at 82% -8%, #E7ECFB 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, #EEF1FB 0%, transparent 55%),
+    var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+  }
+  .app{max-width:720px;margin:0 auto;padding:20px 16px 40px;}
+
+  header{display:flex;flex-direction:column;gap:14px;margin-bottom:18px;}
+  .eyebrow{font-family:'Inter',system-ui,sans-serif;font-size:11px;letter-spacing:.18em;color:var(--primary);text-transform:uppercase;}
+  h1{margin:2px 0 0;font-size:26px;font-weight:800;letter-spacing:-.01em;color:var(--text);}
+
+  .skills-bar{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+  .skill-chip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;box-shadow:0 1px 2px rgba(20,30,60,.04);}
+  .skill-chip .lbl{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:6px;font-family:'Inter',system-ui,sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+  .skill-chip .track{height:6px;border-radius:4px;background:#EEF1F8;overflow:hidden;}
+  .skill-chip .fill{height:100%;border-radius:4px;transition:width .4s ease;}
+  .skill-chip.speaking{background:rgba(226,96,31,.08);border-color:rgba(226,96,31,.28);}
+  .skill-chip.speaking .lbl{color:var(--speaking);}
+  .skill-chip.speaking .fill{background:var(--speaking);}
+  .skill-chip.listening{background:rgba(14,134,168,.08);border-color:rgba(14,134,168,.28);}
+  .skill-chip.listening .lbl{color:var(--listening);}
+  .skill-chip.listening .fill{background:var(--listening);}
+  .skill-chip.reading{background:rgba(113,65,201,.08);border-color:rgba(113,65,201,.28);}
+  .skill-chip.reading .lbl{color:var(--reading);}
+  .skill-chip.reading .fill{background:var(--reading);}
+  .skill-chip.writing{background:rgba(18,145,94,.08);border-color:rgba(18,145,94,.28);}
+  .skill-chip.writing .lbl{color:var(--writing);}
+  .skill-chip.writing .fill{background:var(--writing);}
+  .skill-chip.overall{background:rgba(47,95,224,.08);border-color:rgba(47,95,224,.3);}
+  .skill-chip.overall .lbl{color:var(--primary);}
+  .skill-chip.overall .fill{background:var(--primary);}
+
+  .cefr-estimate{font-size:11.5px;color:var(--muted);line-height:1.5;text-align:center;padding:2px 4px;}
+  .cefr-estimate strong{color:var(--primary);font-weight:800;}
+
+  .mode-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px;}
+  .tab{background:var(--panel);border:1px solid var(--line);color:var(--muted);padding:10px 4px;border-radius:10px;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Inter',system-ui,sans-serif;}
+  .tab:hover{color:var(--text);border-color:var(--primary-2);}
+  .tab.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 6px 16px rgba(47,95,224,.25);font-weight:800;}
+
+  .hint-row{margin-bottom:16px;}
+  .hint-tab{width:100%;border-color:var(--gold);color:var(--gold);background:var(--panel);}
+  .hint-tab:hover{color:#fff;background:var(--gold);}
+  .hint-tab.on{background:var(--gold);color:#fff;box-shadow:0 6px 16px rgba(185,121,26,.25);}
+
+  .hint-panel{display:none;width:100%;background:var(--gold-bg);border:1px solid var(--gold);border-radius:12px;padding:12px 14px;text-align:left;font-size:13px;line-height:1.55;}
+  .hint-panel.open{display:block;}
+  .hint-panel .hp-row{margin-bottom:6px;}
+  .hint-panel .hp-tag{font-family:'Inter',system-ui,sans-serif;font-size:10px;letter-spacing:.1em;color:var(--gold);margin-right:6px;font-weight:700;}
+
+  .sound-check{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;}
+  .sound-check .btn{padding:8px 14px;font-size:12px;flex:none;}
+  .sound-check .voice-tag{font-size:11.5px;line-height:1.4;}
+  .mic-level-track{width:80px;height:10px;border-radius:5px;background:#EEF1F8;border:1px solid var(--line);overflow:hidden;flex:none;}
+  .mic-level-fill{height:100%;width:0%;background:var(--writing);transition:width .06s linear;}
+
+  .check-confirm{display:flex;gap:6px;margin-left:auto;}
+  .btn.tiny{padding:5px 10px;font-size:11px;border-radius:7px;font-weight:700;}
+  .btn.tiny.ok{background:#fff;color:var(--writing);border:1px solid var(--writing);}
+  .btn.tiny.ok:hover,.btn.tiny.ok.selected{background:var(--writing);color:#fff;}
+  .btn.tiny.bad{background:#fff;color:var(--bad);border:1px solid var(--bad);}
+  .btn.tiny.bad:hover,.btn.tiny.bad.selected{background:var(--bad);color:#fff;}
+
+  .session-control{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-align:center;}
+  .session-btn{width:100%;font-size:15px;padding:13px;background:linear-gradient(135deg,var(--primary),var(--writing));}
+  .session-btn.paused{background:linear-gradient(135deg,var(--gold),var(--speaking));}
+  .session-btn:disabled{background:#C7CCDA;opacity:1;cursor:not-allowed;}
+  .session-hint{margin-top:6px;}
+
+  .pause-overlay{position:absolute;inset:0;background:rgba(243,245,251,.95);border-radius:18px;display:flex;align-items:center;justify-content:center;z-index:20;cursor:pointer;text-align:center;padding:20px;}
+  .pause-overlay-inner{font-weight:800;font-size:17px;color:var(--primary);line-height:1.5;}
+  .pause-overlay-inner span{display:block;font-weight:600;font-size:12.5px;color:var(--muted);margin-top:6px;}
+
+  .exam-row{margin-bottom:12px;}
+  .exam-tab{width:100%;background:linear-gradient(135deg,var(--primary),var(--gold));color:#fff;border:none;font-size:13px;padding:13px 10px;box-shadow:0 6px 18px rgba(47,95,224,.28);letter-spacing:.02em;}
+  .exam-tab:hover{filter:brightness(1.06);color:#fff;}
+  .exam-tab.active{outline:2px solid var(--primary);outline-offset:2px;}
+  .exam-banner{background:var(--panel);border:1px solid var(--primary);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;font-weight:800;color:var(--primary);text-align:center;font-family:'Inter',system-ui,sans-serif;}
+  .exam-breakdown{width:100%;max-width:280px;margin:14px auto 0;text-align:left;}
+  .exam-row-stat{display:flex;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700;color:var(--text);}
+  .exam-row-stat:last-child{border-bottom:none;}
+
+  .voice-tag{font-family:'Inter',system-ui,sans-serif;font-size:11px;color:var(--muted);min-height:14px;}
+
+  .stage{position:relative;}
+  .progress-dots{display:flex;gap:5px;justify-content:center;margin-bottom:12px;flex-wrap:wrap;}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--line);}
+  .dot.done{background:var(--primary);}
+  .dot.current{background:var(--text);}
+
+  .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 22px;text-align:center;min-height:340px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;box-shadow:0 1px 2px rgba(20,30,60,.04), 0 10px 28px rgba(20,30,60,.05);}
+
+  .ring-wrap{position:relative;width:104px;height:104px;}
+  .ring{width:104px;height:104px;transform:rotate(-90deg);}
+  .ring-bg{fill:none;stroke:#E2E6F0;stroke-width:8;}
+  .ring-fg{fill:none;stroke:var(--primary);stroke-width:8;stroke-linecap:round;stroke-dasharray:327;stroke-dashoffset:0;transition:stroke-dashoffset linear;}
+  .ring-fg.danger{stroke:var(--bad);}
+  .ring-fg.indefinite{animation:ringPulse 1.6s ease-in-out infinite;}
+  @keyframes ringPulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+  .ring-time{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Inter',system-ui,sans-serif;font-size:26px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;}
+  .ring-time.indefinite{font-size:22px;}
+
+  .mode-label{font-family:'Inter',system-ui,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+
+  .prompt-area{min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;}
+  .sentence{font-size:19px;font-weight:700;line-height:1.4;color:var(--text);}
+  .hidden-hint{color:var(--muted);font-size:13px;}
+
+  .chunk-pool,.chunk-answer{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;min-height:40px;width:100%;}
+  .chunk{background:var(--panel-2);border:1px solid var(--line);padding:8px 12px;border-radius:9px;font-size:14px;cursor:pointer;font-weight:600;color:var(--text);}
+  .chunk:hover{border-color:var(--primary-2);}
+  .chunk-answer .chunk{background:#E7EEFF;border-color:var(--primary);}
+  .divider{width:100%;height:1px;background:var(--line);margin:2px 0;}
+
+  input[type=text]{width:100%;background:#F7F9FD;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px 14px;font-size:15px;font-family:'Inter',system-ui,sans-serif;}
+  input[type=text]:focus{outline:none;border-color:var(--primary);}
+  textarea{width:100%;min-height:100px;background:#F7F9FD;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px 14px;font-size:14px;font-family:'Inter',system-ui,sans-serif;resize:vertical;}
+  textarea:focus{outline:none;border-color:var(--primary);}
+
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;}
+  .opt{background:var(--panel-2);border:1px solid var(--line);color:var(--text);padding:12px 8px;border-radius:10px;cursor:pointer;font-size:14px;font-weight:600;}
+  .opt:hover{border-color:var(--reading);}
+  .opt.correct{border-color:var(--writing);background:#E7F8EF;}
+  .opt.wrong{border-color:var(--bad);background:#FCE9EC;}
+
+  .controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;width:100%;}
+  button.btn{background:var(--primary);color:#fff;border:none;padding:11px 18px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;font-family:'Inter',system-ui,sans-serif;transition:filter .15s;}
+  button.btn:hover{filter:brightness(1.08);}
+  button.btn.secondary{background:#fff;color:var(--text);border:1px solid var(--line);font-weight:700;}
+  button.btn.secondary:hover{border-color:var(--primary-2);}
+  button.btn:disabled{opacity:.4;cursor:not-allowed;}
+
+  .feedback{min-height:24px;font-size:13px;font-weight:700;font-family:'Inter',system-ui,sans-serif;}
+  .feedback.ok{color:var(--writing);}
+  .feedback.bad{color:var(--bad);}
+
+  .dialogue{width:100%;text-align:left;background:#F7F9FD;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.7;color:var(--text);}
+  .dialogue .sp{color:var(--primary);font-weight:700;font-family:'Inter',system-ui,sans-serif;font-size:11px;margin-right:4px;}
+  .dialogue .ln{margin-bottom:2px;}
+
+  .passage-box{width:100%;text-align:left;background:#F7F9FD;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:14.5px;line-height:1.7;color:var(--text);}
+
+  .hint{text-align:center;color:var(--muted);font-size:12px;margin-top:14px;line-height:1.6;}
+
+  .summary{text-align:center;}
+  .summary h2{font-size:20px;margin-bottom:4px;color:var(--text);}
+  .summary .big{font-family:'Inter',system-ui,sans-serif;font-size:40px;font-weight:700;color:var(--primary);margin:8px 0;font-variant-numeric:tabular-nums;}
+
+  .lock-screen{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:
+      radial-gradient(1100px 560px at 82% -8%, #E7ECFB 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #EEF1FB 0%, transparent 55%),
+      var(--bg);}
+  .lock-card{width:100%;max-width:360px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:32px 26px;text-align:center;box-shadow:0 1px 2px rgba(20,30,60,.04), 0 10px 28px rgba(20,30,60,.08);}
+  .lock-icon{font-size:34px;margin-bottom:6px;}
+  .lock-sub{color:var(--muted);font-size:13px;line-height:1.5;margin:10px 0 18px;}
+  .lock-card input[type=password]{width:100%;background:#F7F9FD;border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px 14px;font-size:15px;font-family:'Inter',system-ui,sans-serif;text-align:center;letter-spacing:.05em;}
+  .lock-card input[type=password]:focus{outline:none;border-color:var(--primary);}
+  .lock-error{min-height:20px;color:var(--bad);font-size:13px;font-weight:600;margin-top:10px;}
+</style>
+</head>
+<body>
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-icon">🔒</div>
+    <div class="eyebrow">V4SE · App 5</div>
+    <h1 style="margin-bottom:4px;">Reflex Training Room</h1>
+    <p class="lock-sub">Enter the access password to start your training session.</p>
+    <input type="password" id="lockInput" placeholder="Password" autocomplete="off">
+    <button class="btn" id="lockSubmit" style="width:100%;margin-top:10px;">Unlock</button>
+    <div class="lock-error" id="lockError"></div>
+  </div>
+</div>
+<div class="app" id="appRoot" style="display:none;">
+  <header>
+    <div>
+      <div class="eyebrow">V4SE · App 5</div>
+      <h1>Reflex Training Room</h1>
+    </div>
+    <div class="skills-bar" id="skillsBar"></div>
+    <div class="cefr-estimate" id="cefrEstimate"></div>
+    <div class="sound-check">
+      <button class="btn secondary" id="testSoundBtn">🔊 Test Sound</button>
+      <span class="voice-tag" id="soundCheckMsg">Tap this once to check that audio works on this device/browser.</span>
+      <div class="check-confirm" id="soundConfirm" style="display:none">
+        <button class="btn tiny ok" id="soundOk">✓ Đạt</button>
+        <button class="btn tiny bad" id="soundBad">✗ Chưa đạt</button>
+      </div>
+    </div>
+    <div class="sound-check">
+      <button class="btn secondary" id="testMicBtn">🎙 Test Microphone</button>
+      <span class="voice-tag" id="micCheckMsg">Tap this once to check that your headset mic is picked up correctly.</span>
+      <div class="check-confirm" id="micConfirm" style="display:none">
+        <button class="btn tiny ok" id="micOk">✓ Đạt</button>
+        <button class="btn tiny bad" id="micBad">✗ Chưa đạt</button>
+      </div>
+    </div>
+    <div class="sound-check">
+      <button class="btn secondary" id="micLevelBtn">🎚 Mic Level Test (5s)</button>
+      <div class="mic-level-track" id="micLevelTrack"><div class="mic-level-fill" id="micLevelFill"></div></div>
+      <span class="voice-tag" id="micLevelMsg">Raw signal test — shows if the browser receives ANY audio from your mic, even if speech isn't recognized.</span>
+      <div class="check-confirm" id="levelConfirm" style="display:none">
+        <button class="btn tiny ok" id="levelOk">✓ Đạt</button>
+        <button class="btn tiny bad" id="levelBad">✗ Chưa đạt</button>
+      </div>
+    </div>
+    <div class="voice-tag" id="voiceDebug" style="padding:0 2px;font-size:10px;opacity:.65;"></div>
+    <div class="session-control">
+      <button class="btn session-btn" id="sessionToggleBtn" disabled>▶ Start Session</button>
+      <div class="voice-tag session-hint" id="sessionHint">Hoàn thành ✓ Đạt cho cả 3 bước kiểm tra âm thanh ở trên để bắt đầu.</div>
+    </div>
+  </header>
+
+  <nav class="mode-tabs" id="modeTabs">
+    <button class="tab active" data-mode="repeat">🗣 A. Repeat</button>
+    <button class="tab" data-mode="build">🔤 B. Sentence Build</button>
+    <button class="tab" data-mode="conversations">💬 C. Conversations</button>
+    <button class="tab" data-mode="completion">📖 D. Completion</button>
+    <button class="tab" data-mode="dictation">👂 E. Dictation</button>
+    <button class="tab" data-mode="passage">📝 F. Passage</button>
+  </nav>
+  <div class="hint-row"><button class="tab hint-tab" id="hintTab">💡 Hint / Answer</button></div>
+  <div class="exam-row"><button class="tab exam-tab" id="examTab">🎓 V4SE EXAM — Full Timed Simulation</button></div>
+  <div class="exam-banner" id="examBanner" style="display:none;"></div>
+
+  <main class="stage">
+    <div class="progress-dots" id="progressDots"></div>
+    <div class="card" id="card"></div>
+  </main>
+
+  <div class="hint" id="globalHint">Choose a task type to start a training round — timing and question format match the real V4SE test.</div>
+</div>
+
+<script>
+// ================== DATA: extracted from real Versant 4 Skills Essential test sets ==================
+
+// Part A — Repeat (listen and repeat exactly, 6 seconds)
+const REPEAT_BANK = [];
+
+// Part B — Sentence Builds (listen to shuffled word groups, arrange and say, 8 seconds)
+const BUILD_BANK = [];
+
+// Part C — Conversations (listen to a short dialogue, answer a follow-up question briefly)
+const CONV_BANK = [];
+
+// Part D — Sentence Completion (type one word, 25 seconds)
+const COMPLETION_BANK = [];
+
+// Part E — Dictation (type exactly what you hear, 25 seconds)
+const DICTATION_BANK = [];
+
+// Part F — Passage Reconstruction (read for 30s, then reconstruct in your own words in 90s)
+const PASSAGE_BANK = [];
+
+const MODE_INFO = {
+  repeat:        { label:"A. Repeat",                skill:"speaking",  time:15,  ring:"var(--speaking)",  pool:REPEAT_BANK,     round:8 },
+  build:         { label:"B. Sentence Build",         skill:"speaking",  time:15,  ring:"var(--speaking)",  pool:BUILD_BANK,      round:8 },
+  conversations: { label:"C. Conversations",          skill:"listening", time:15,  ring:"var(--listening)", pool:CONV_BANK,       round:8 },
+  completion:    { label:"D. Sentence Completion",    skill:"reading",   time:25,  ring:"var(--reading)",   pool:COMPLETION_BANK, round:8 },
+  dictation:     { label:"E. Dictation",              skill:"listening", time:25,  ring:"var(--listening)", secondSkill:"writing", pool:DICTATION_BANK, round:8 },
+  passage:       { label:"F. Passage Reconstruction", skill:"reading",   time:30,  ring:"var(--reading)",   secondSkill:"writing", pool:PASSAGE_BANK, round:4, writeTime:90 }
+};
+
+const EXAM_SEQUENCE = [
+  { mode:'repeat',        count:16 },
+  { mode:'build',         count:8  },
+  { mode:'conversations', count:12 },
+  { mode:'completion',    count:18 },
+  { mode:'dictation',     count:14 },
+  { mode:'passage',       count:2  }
+];
+
+const scores = {
+  speaking:{correct:0,total:0},
+  listening:{correct:0,total:0},
+  reading:{correct:0,total:0},
+  writing:{correct:0,total:0},
+};
+
+let state = {
+  mode:'repeat', order:[], idx:0, timer:null, ringTimer:null, recognizing:false, hintOpen:false,
+  lastPlayedItem:null, examActive:false, examSeqIdx:0,
+  // Session run/pause control (gated behind the 3 audio checks below).
+  running:false, paused:false, activateFn:null,
+  ringRemaining:0, ringOnExpire:null,
+  wasListening:false, listeningArgs:null,
+  checklist:{ sound:null, mic:null, level:null } // null=not confirmed, true=Đạt, false=Chưa đạt
+};
+let examStartSnapshot = null;
+
+function shuffledIndices(mode, countOverride){
+  const info = MODE_INFO[mode];
+  const arr = info.pool.map((_,i)=>i);
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  const n = (countOverride!=null) ? countOverride : info.round;
+  return arr.slice(0, Math.min(n, arr.length));
+}
+
+function normalize(s){
+  return s.toLowerCase().replace(/[.,!?'"]/g,"").trim().split(/\s+/).filter(Boolean);
+}
+function accuracy(target, attempt){
+  const t = normalize(target), a = normalize(attempt);
+  if(t.length===0) return 0;
+  let hit=0; const pool=[...a];
+  t.forEach(w=>{ const i=pool.indexOf(w); if(i>-1){hit++; pool.splice(i,1);} });
+  return hit/t.length;
+}
+function normWord(s){
+  return (s||"").toLowerCase().replace(/[.,!?'"]/g,"").trim();
+}
+
+let voicePool = [];
+let voicesReady = false;
+function loadVoices(){
+  if(!('speechSynthesis' in window)) return;
+  const all = window.speechSynthesis.getVoices();
+  if(all.length) voicesReady = true;
+  const enVoices = all.filter(v => v.lang && v.lang.toLowerCase().startsWith('en'));
+  // Prefer offline/local voices over network ("remote") voices. Network
+  // voices stream audio from a cloud TTS service and can silently produce
+  // zero sound (no error event fired) if that endpoint is blocked by a
+  // firewall/proxy or the machine has no internet — a common real-world
+  // cause of "the app opens fine but I hear nothing" on some Windows PCs.
+  const localEnVoices = enVoices.filter(v => v.localService);
+  voicePool = localEnVoices.length ? localEnVoices : enVoices;
+
+  const dbg = document.getElementById('voiceDebug');
+  if(dbg){
+    if(all.length===0){
+      dbg.textContent = 'Voices detected: 0 — this browser/OS has no text-to-speech voices installed at all.';
+    } else {
+      dbg.textContent = `Voices detected: ${all.length} total, ${enVoices.length} English (${localEnVoices.length} offline / ${enVoices.length-localEnVoices.length} network).`;
+    }
+  }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+  // Some Chromium/WebView builds never fire onvoiceschanged at all — poll for
+  // a few seconds after load as a fallback so voicePool still gets populated.
+  let voicePollTries = 0;
+  const voicePoll = setInterval(()=>{
+    voicePollTries++;
+    loadVoices();
+    if(voicesReady || voicePollTries > 20) clearInterval(voicePoll);
+  }, 300);
+}
+
+// Chrome/Edge on some Windows machines silently drop the very first speak()
+// call right after page load (a known browser bug). Firing one near-silent
+// utterance at unlock time — inside a real user click, which browsers
+// require to allow audio — "wakes up" the speech engine so real sentences
+// play reliably afterwards.
+function warmUpSpeech(){
+  if(!('speechSynthesis' in window)) return;
+  try{
+    window.speechSynthesis.resume();
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+// NOTE: this used to be called automatically at unlock time to avoid the mic
+// permission prompt interrupting the first Repeat sentence. Turned out to
+// cause a worse problem for Bluetooth headset users: the instant a page
+// touches getUserMedia, Windows switches a Bluetooth headset from its
+// high-quality music profile (A2DP) to the low-quality call profile
+// (HFP/Hands-Free) for BOTH input and output — making every sentence sound
+// quiet/muffled for the rest of the session, even outside Speaking
+// exercises. So this is no longer auto-called; it only runs on-demand when
+// mic access is actually needed (Test Microphone / Mic Level Test buttons,
+// or the first real Repeat/Build question).
+function warmUpMic(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+  navigator.mediaDevices.getUserMedia({ audio:true })
+    .then(stream => stream.getTracks().forEach(t => t.stop()))
+    .catch(()=>{ /* denied or no mic — self-report fallback handles this */ });
+}
+
+// Resolve the browser's microphone permission prompt BEFORE starting
+// SpeechRecognition, instead of letting rec.start() trigger its own prompt
+// internally. Calling SpeechRecognition while a permission dialog is still
+// open/pending is what caused the false "no audio detected" result seen
+// earlier — the recognizer gave up before the user had even answered the
+// dialog.
+//
+// IMPORTANT: on file:// pages, Chrome does NOT reliably remember "Allow
+// while visiting the site" the way it does for https:// pages — it can
+// re-prompt on every single getUserMedia() call within the same session.
+// On file:// this used to re-prompt for mic access on every single question,
+// so the app kept one shared getUserMedia() stream open for the whole
+// session — but that meant a Bluetooth headset stayed in its low-quality
+// call profile the entire time. Now that the app is served over a real
+// https:// origin (GitHub Pages), Chrome reliably remembers "Allow" per
+// origin across separate getUserMedia() calls, so we no longer need to hold
+// the stream open to avoid re-prompts. Instead: acquire the mic only when
+// actually needed, then release it (see releaseSharedMic()) right after each
+// use finishes — the headset drops back to full-quality music mode between
+// questions, and the next mic request still won't show a permission dialog.
+let sharedMicStream = null;
+function ensureMicPermission(onGranted, onDenied){
+  if(sharedMicStream && sharedMicStream.active){ onGranted(); return; }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){ onDenied(); return; }
+  navigator.mediaDevices.getUserMedia({ audio:true })
+    .then(stream => { sharedMicStream = stream; onGranted(); })
+    .catch(()=> onDenied());
+}
+
+// Free the mic right after each use so a Bluetooth headset can drop back to
+// its full-quality music profile between questions. Safe to call even if
+// nothing is open. The next getUserMedia() call will re-acquire it — on the
+// https:// origin this happens silently, no permission dialog.
+function releaseSharedMic(){
+  if(sharedMicStream){
+    sharedMicStream.getTracks().forEach(t=>{ try{ t.stop(); }catch(e){} });
+    sharedMicStream = null;
+  }
+}
+
+// Speak one sentence, with an automatic one-time retry using the browser's
+// own default voice (no explicit .voice set) if the first attempt produces
+// no sound within 1.8s or errors out. This protects against the two most
+// common silent-failure causes: a broken/duplicate installed voice, or a
+// network voice whose cloud endpoint is unreachable.
+function speak(text, onStatus, onEnd){
+  if(!('speechSynthesis' in window)){ if(onStatus) onStatus('unsupported'); if(onEnd) onEnd(); return null; }
+  let finished = false;
+  let safetyTimer = null;
+  const finish = ()=>{ if(finished) return; finished = true; clearTimeout(safetyTimer); if(onEnd) onEnd(); };
+  let firstChoice = null;
+  const MAX_TRIES = 3;
+
+  function attempt(tryNum){
+    const useDefaultVoice = tryNum > 0;
+    const u = new SpeechSynthesisUtterance(text);
+    let chosen = null;
+    if(!useDefaultVoice && voicePool.length){
+      chosen = voicePool[Math.floor(Math.random()*voicePool.length)];
+      u.voice = chosen;
+      u.lang = chosen.lang;
+    } else {
+      u.lang = 'en-US';
+    }
+    if(tryNum===0) firstChoice = chosen;
+    u.rate = 0.95;
+    u.volume = 1; // explicit max — SpeechSynthesis has no way to boost past this
+    let started = false;
+    u.onstart = ()=>{ started = true; if(onStatus) onStatus('ok'); };
+    u.onend = finish;
+    u.onerror = (e)=>{
+      const reason = e && e.error;
+      if(finished) return;
+      // 'interrupted'/'canceled' usually mean another speak()/cancel() call
+      // (often from a second tab of this same app fighting over the browser's
+      // single shared speech engine) pre-empted this utterance — not a real
+      // failure. Retry quietly instead of surfacing it as an error.
+      if(tryNum < MAX_TRIES - 1){ attempt(tryNum+1); return; }
+      if(onStatus) onStatus('error', reason);
+      finish();
+    };
+    window.speechSynthesis.resume();
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+    setTimeout(()=>{
+      if(started || finished) return;
+      if(tryNum < MAX_TRIES - 1){ attempt(tryNum+1); return; } // no sound yet — retry
+      if(onStatus) onStatus('silent');
+    }, 1800);
+  }
+
+  attempt(0);
+  safetyTimer = setTimeout(finish, Math.max(8000, text.length*150));
+  return firstChoice;
+}
+
+// Same retry-with-default-voice protection as speak(), applied per line.
+function speakSequential(lines, onDone, onStatus){
+  if(!('speechSynthesis' in window)){ if(onStatus) onStatus('unsupported'); onDone(); return; }
+  window.speechSynthesis.resume();
+  window.speechSynthesis.cancel();
+  let i = 0;
+  let anyStarted = false;
+  const MAX_TRIES = 3;
+  function speakLine(clean, tryNum, onLineDone){
+    const useDefaultVoice = tryNum > 0;
+    const u = new SpeechSynthesisUtterance(clean);
+    if(!useDefaultVoice && voicePool.length){ const v = voicePool[Math.floor(Math.random()*voicePool.length)]; u.voice=v; u.lang=v.lang; }
+    else u.lang='en-US';
+    u.rate = 0.95;
+    u.volume = 1; // explicit max — SpeechSynthesis has no way to boost past this
+    let started = false, done = false;
+    const finishLine = ()=>{ if(done) return; done = true; onLineDone(); };
+    u.onstart = ()=>{ started = true; anyStarted = true; if(onStatus) onStatus('ok'); };
+    u.onend = finishLine;
+    u.onerror = (e)=>{
+      if(done) return;
+      if(tryNum < MAX_TRIES - 1){ speakLine(clean, tryNum+1, onLineDone); return; }
+      if(onStatus) onStatus('error', e && e.error);
+      finishLine();
+    };
+    window.speechSynthesis.speak(u);
+    setTimeout(()=>{
+      if(started || done) return;
+      if(tryNum < MAX_TRIES - 1){ speakLine(clean, tryNum+1, onLineDone); return; }
+    }, 1800);
+    setTimeout(finishLine, Math.max(8000, clean.length*150));
+  }
+  function playNext(){
+    if(i >= lines.length){ onDone(); return; }
+    const clean = lines[i].replace(/^Speaker \d:\s*/,'');
+    speakLine(clean, 0, ()=>{ i++; setTimeout(playNext, 350); });
+  }
+  playNext();
+  if(onStatus) setTimeout(()=>{ if(!anyStarted) onStatus('silent'); }, 1800);
+}
+
+function applySpeechStatus(elId, status, detail){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  if(status==='ok') return; // voiceTag already shows the voice name — leave it as is
+  if(status==='unsupported') el.textContent = '❌ This browser has no text-to-speech support — try Chrome or Edge.';
+  else if(status==='error'){
+    const hint = detail ? ` (${detail})` : '';
+    el.textContent = `⚠️ Speech error${hint} — if you have this app open in more than one tab, close the extra tabs (they fight over the browser's shared speech engine). Otherwise check system volume or try Chrome/Edge.`;
+  }
+  else if(status==='silent') el.textContent = '⚠️ Still no sound after retrying — check: (1) system volume + correct output device selected, (2) this browser tab isn\'t muted, (3) Windows Settings → Time & Language → Speech → Manage voices has an English voice installed. Then tap Play again.';
+}
+
+function recordScore(skill, correct){
+  scores[skill].total++; if(correct) scores[skill].correct++;
+  renderSkillsBar();
+}
+
+// Normally shows cumulative practice % per skill. After finishing a V4SE
+// EXAM run, examResultData holds that attempt's own correct/total per skill
+// — while it's set, the chips switch to showing the raw score (e.g. "13/16")
+// instead of a percentage, so the exam result reads like a real score report.
+// A 5th "Overall" tile always shows the combined average across all 4 skills.
+let examResultData = null;
+function renderSkillsBar(){
+  const defs = [
+    ['speaking','🗣 Speaking'], ['listening','👂 Listening'],
+    ['reading','📖 Reading'], ['writing','✍️ Writing']
+  ];
+  const data = examResultData || scores;
+  const showScore = !!examResultData;
+  let sumCorrect = 0, sumTotal = 0;
+  const tiles = defs.map(([key,label])=>{
+    const s = data[key];
+    sumCorrect += s.correct; sumTotal += s.total;
+    const pct = s.total ? Math.round(100*s.correct/s.total) : 0;
+    const valueText = showScore ? `${s.correct}/${s.total}` : `${pct}%`;
+    return `<div class="skill-chip ${key}">
+      <div class="lbl"><span>${label}</span><span>${valueText}</span></div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  const avgPct = sumTotal ? Math.round(100*sumCorrect/sumTotal) : 0;
+  const avgText = showScore ? `${sumCorrect}/${sumTotal}` : `${avgPct}%`;
+  const avgTile = `<div class="skill-chip overall">
+      <div class="lbl"><span>🎯 Overall</span><span>${avgText}</span></div>
+      <div class="track"><div class="fill" style="width:${avgPct}%"></div></div>
+    </div>`;
+  document.getElementById('skillsBar').innerHTML = tiles + avgTile;
+
+  const cefrEl = document.getElementById('cefrEstimate');
+  if(cefrEl){
+    if(sumTotal === 0){
+      cefrEl.textContent = 'Estimated CEFR level: — (practice a few questions first)';
+    } else {
+      const est = estimateCefr(avgPct);
+      const basis = showScore ? 'this exam attempt' : 'your practice accuracy so far';
+      cefrEl.innerHTML = `Estimated CEFR level: <strong>${est.level}</strong> (≈${est.versantScore}/70 on the Versant scale) — unofficial estimate from ${basis}, not an actual Versant score.`;
+    }
+  }
+}
+
+// UNOFFICIAL estimate only. Maps this app's own %-correct accuracy onto
+// Pearson's officially published Versant English Placement Test score-to-CEFR
+// table (20-70 scale) — source: Pearson, "Relating the Versant English
+// Placement Test to the CEFR" (expert panel standard-setting table).
+// We treat 0% accuracy here as roughly the test's 20-point floor and 100%
+// accuracy as roughly a strong 70 (top of the published table, C1), then
+// apply Pearson's own band cutoffs. This is a rough self-study indicator to
+// give a sense of level — not a substitute for taking the real Versant test.
+function estimateCefr(pct){
+  const versantScore = Math.round(20 + (pct/100)*50);
+  let level;
+  if(versantScore <= 23) level = 'Pre-A1';
+  else if(versantScore <= 33) level = 'A1';
+  else if(versantScore <= 45) level = 'A2';
+  else if(versantScore <= 56) level = 'B1';
+  else if(versantScore <= 65) level = 'B2';
+  else level = 'C1';
+  return { level, versantScore };
+}
+
+function renderDots(){
+  document.getElementById('progressDots').innerHTML = state.order.map((_,i)=>{
+    const cls = i<state.idx ? 'done' : (i===state.idx ? 'current' : '');
+    return `<div class="dot ${cls}"></div>`;
+  }).join('');
+}
+
+function clearTimers(){
+  clearTimeout(state.timer); state.timer=null;
+  clearInterval(state.ringTimer); state.ringTimer=null;
+  clearTimeout(state.silenceTimer); state.silenceTimer=null;
+  if(state.recognition){ try{state.recognition.stop();}catch(e){} }
+}
+
+// Starts (or restarts) the per-question countdown ring. Safe to call again
+// on the same question — e.g. once when the question first appears, then
+// again once the user presses Play/Confirm to give a fresh window for their
+// actual response — because it always clears any timer/interval left over
+// from a previous call first, so an old call never sneaks in and fires
+// onExpire late/twice.
+function startRing(seconds, onExpire){
+  clearTimeout(state.timer); state.timer=null;
+  clearInterval(state.ringTimer); state.ringTimer=null;
+  const ring = document.getElementById('ringFg');
+  const timeEl = document.getElementById('ringTime');
+  if(!ring || !timeEl){ console.error('[V4SE] startRing: ring elements missing, skipping'); return; }
+  ring.style.transition='none';
+  ring.style.strokeDashoffset='0';
+  ring.classList.remove('danger');
+  timeEl.textContent = seconds;
+  const CIRC = 327;
+  void ring.offsetWidth;
+  ring.style.transition = `stroke-dashoffset ${seconds}s linear`;
+  ring.style.strokeDashoffset = CIRC;
+  let remaining = seconds;
+  // Remembered so Pause/Resume can freeze and later restart this exact
+  // countdown (same remaining time, same onExpire) instead of resetting it.
+  state.ringRemaining = remaining;
+  state.ringOnExpire = onExpire;
+  state.ringTimer = setInterval(()=>{
+    remaining -= 1;
+    state.ringRemaining = remaining;
+    timeEl.textContent = Math.max(remaining,0);
+    if(remaining<=2) ring.classList.add('danger');
+    if(remaining<=0){ clearInterval(state.ringTimer); state.ringTimer=null; }
+  },1000);
+  // Wrapped in try/catch + logged: if onExpire ever throws (e.g. a DOM node
+  // it expects is momentarily missing), the error is visible in the console
+  // instead of silently killing the callback before it reaches nextQuestion(),
+  // which would otherwise look like the app "getting stuck" at 0.
+  state.timer = setTimeout(()=>{
+    clearInterval(state.ringTimer); state.ringTimer=null;
+    state.ringOnExpire = null;
+    try{ onExpire(); }
+    catch(err){ console.error('[V4SE] startRing onExpire failed:', err); nextQuestion(); }
+  }, seconds*1000);
+}
+
+// Freezes the countdown + playback + mic exactly where they are, without
+// losing progress. Resume continues from here rather than restarting.
+function pauseRing(){
+  clearTimeout(state.timer); state.timer=null;
+  clearInterval(state.ringTimer); state.ringTimer=null;
+  const ring = document.getElementById('ringFg');
+  if(ring){
+    try{
+      const frozenOffset = getComputedStyle(ring).strokeDashoffset;
+      ring.style.transition = 'none';
+      ring.style.strokeDashoffset = frozenOffset;
+    }catch(e){}
+  }
+  if('speechSynthesis' in window){ try{ window.speechSynthesis.pause(); }catch(e){} }
+  if(state.recognition){
+    state.wasListening = true;
+    try{ state.recognition.stop(); }catch(e){}
+  }
+}
+
+// Continues a paused question: resumes speech synthesis, restarts the
+// countdown with whatever time was left (state.ringRemaining/ringOnExpire,
+// set by startRing and left untouched by pauseRing), and — since the Web
+// Speech API has no real pause/resume — restarts mic listening from
+// scratch if it was actively listening when paused. If there's nothing to
+// resume (fresh question, never started), falls back to activateFn().
+function resumeRing(){
+  if('speechSynthesis' in window){ try{ window.speechSynthesis.resume(); }catch(e){} }
+  if(state.ringOnExpire && state.ringRemaining > 0){
+    startRing(state.ringRemaining, state.ringOnExpire);
+    if(state.wasListening && state.listeningArgs){
+      state.wasListening = false;
+      beginSpeakingCapture(state.listeningArgs.targetText, state.listeningArgs.info, state.listeningArgs.buildCorrect, state.listeningArgs.acceptList);
+    }
+  } else if(state.activateFn){
+    state.activateFn();
+  }
+}
+
+// ================== Session Start/Pause + audio-check gate ==================
+function allChecksPassed(){
+  return state.checklist.sound === true && state.checklist.mic === true && state.checklist.level === true;
+}
+
+function syncSessionControls(){
+  const btn = document.getElementById('sessionToggleBtn');
+  const hint = document.getElementById('sessionHint');
+  if(!btn) return;
+  const ok = allChecksPassed();
+  // Audio checks always take priority: the Start button stays locked (and,
+  // if the checks somehow become un-passed again, this also re-locks it)
+  // regardless of what state the session itself is in.
+  if(!ok) btn.disabled = true;
+  else if(!state.running) btn.disabled = false;
+  if(hint){
+    hint.textContent = ok
+      ? 'Sẵn sàng — bấm để bắt đầu / tạm dừng phiên luyện.'
+      : 'Hoàn thành ✓ Đạt cho cả 3 bước kiểm tra âm thanh ở trên để bắt đầu.';
+  }
+  updateSessionButtonLabel();
+}
+
+function updateSessionButtonLabel(){
+  const btn = document.getElementById('sessionToggleBtn');
+  if(!btn) return;
+  if(!state.running){
+    btn.textContent = '▶ Start Session';
+    btn.classList.remove('paused');
+  } else if(state.paused){
+    btn.textContent = '▶ Resume';
+    btn.classList.add('paused');
+  } else {
+    btn.textContent = '⏸ Pause';
+    btn.classList.remove('paused');
+  }
+}
+
+function syncPauseOverlay(){
+  const overlay = document.getElementById('pauseOverlay');
+  if(!overlay) return;
+  overlay.style.display = (state.running && !state.paused) ? 'none' : 'flex';
+}
+
+function toggleSession(){
+  if(!state.running){
+    if(!allChecksPassed()) return; // guarded again here — audio checks win over the button
+    state.running = true;
+    state.paused = false;
+    if(state.activateFn) state.activateFn();
+  } else if(state.paused){
+    state.paused = false;
+    resumeRing();
+  } else {
+    state.paused = true;
+    pauseRing();
+  }
+  updateSessionButtonLabel();
+  syncPauseOverlay();
+}
+
+
+function switchMode(mode){
+  if(state.examActive){
+    state.examActive = false;
+    document.getElementById('examBanner').style.display = 'none';
+    document.getElementById('examTab').classList.remove('active');
+  }
+  if(examResultData){ examResultData = null; renderSkillsBar(); } // back to normal cumulative % view
+  clearTimers();
+  state.mode = mode; state.order = shuffledIndices(mode); state.idx = 0;
+  document.querySelectorAll('.tab[data-mode]').forEach(t=>t.classList.toggle('active', t.dataset.mode===mode));
+  renderQuestion();
+}
+
+function nextQuestion(){
+  clearTimers();
+  state.idx++;
+  if(state.idx >= state.order.length){
+    if(state.examActive){ advanceExamPart(); return; }
+    renderSummary(); return;
+  }
+  renderQuestion();
+}
+
+function ringHtmlFor(info){
+  return `
+    <div class="ring-wrap">
+      <svg class="ring" viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52" style="stroke:${info.ring}"/>
+      </svg>
+      <div class="ring-time" id="ringTime">${info.time}</div>
+    </div>`;
+}
+
+function renderQuestion(){
+  renderDots();
+  const info = MODE_INFO[state.mode];
+  const item = info.pool[state.order[state.idx]];
+  const card = document.getElementById('card');
+  const ringHtml = ringHtmlFor(info);
+
+  // Fresh question — nothing to resume yet, and no capture recorded yet.
+  // state.activateFn gets set by whichever mode block below runs; it's what
+  // Start/Resume calls to actually kick this question off.
+  state.activateFn = null;
+  state.ringOnExpire = null;
+  state.ringRemaining = 0;
+  state.captured = null;
+  state.wasListening = false;
+  state.listeningArgs = null;
+
+  if(state.mode==='repeat'){
+    const text = item.en;
+    card.innerHTML = `
+      <div class="mode-label">Repeat · Speaking</div>
+      ${ringHtml}
+      <div class="prompt-area">
+        <div class="hidden-hint" id="hh">Plays automatically — repeat it exactly. One timer for the whole question (${info.time}s), no button needed.</div>
+        <div class="sentence" id="sentenceReveal" style="display:none">${text}</div>
+      </div>
+      <div class="voice-tag" id="voiceTag"></div>
+      <div class="hint-panel" id="hintPanel"></div>
+      <div class="feedback" id="fb">🔊 Playing...</div>`;
+    state.lastPlayedItem = { en:text, vi:item.vi };
+    updateHintPanel();
+    // ONE countdown for the entire question, started the instant Start is
+    // pressed (or immediately if the session is already running). Nothing
+    // the user does clears or restarts it — audio playback and speech
+    // capture both happen inside this same window, and whatever was heard
+    // (or wasn't) by the time it hits 0 is what gets scored.
+    state.activateFn = ()=>{
+      startRing(info.time, ()=> finalizeSpeakingOnExpiry(text, info));
+      const v = speak(text, status=> applySpeechStatus('voiceTag', status), ()=> beginSpeakingCapture(text, info, undefined, undefined, 6000));
+      const vt = document.getElementById('voiceTag');
+      if(vt) vt.textContent = v ? `🔊 ${v.lang} — ${v.name}` : '🔊 default browser voice';
+    };
+  }
+
+  if(state.mode==='build'){
+    const shuffled = [...item.chunks].sort(()=>Math.random()-0.5);
+    card.innerHTML = `
+      <div class="mode-label">Sentence Build · Speaking</div>
+      ${ringHtml}
+      <div class="prompt-area">
+        <div class="hidden-hint" id="hh">Listen to the word groups in random order, then say the full sentence in the correct order — one timer for the whole question (${info.time}s)</div>
+      </div>
+      <div class="voice-tag" id="voiceTag">🔊 Playing word groups...</div>
+      <div class="hint-panel" id="hintPanel"></div>
+      <div class="feedback" id="fb"></div>`;
+    state.lastPlayedItem = { en:item.answer, vi:item.vi };
+    updateHintPanel();
+    // ONE countdown for the entire question — playing the shuffled word
+    // groups AND speaking both happen inside it. The word groups are heard
+    // in random order (never shown as clickable text, matching the real
+    // listening-only exam format); scoring compares the spoken sentence
+    // against the correct order via the same accuracy() check used
+    // elsewhere, so a correctly-reordered sentence scores a point and a
+    // wrong order does not.
+    state.activateFn = ()=>{
+      startRing(info.time, ()=> finalizeSpeakingOnExpiry(item.answer, info));
+      let buildOk = true;
+      speakSequential(shuffled, ()=>{
+        const vt = document.getElementById('voiceTag');
+        if(vt && buildOk) vt.textContent = '';
+        beginSpeakingCapture(item.answer, info, undefined, undefined);
+      }, status=>{
+        if(status!=='ok') buildOk = false;
+        applySpeechStatus('voiceTag', status);
+      });
+    };
+  }
+
+  if(state.mode==='conversations'){
+    card.innerHTML = `
+      <div class="mode-label">Conversations · Listening</div>
+      ${ringHtml}
+      <div class="prompt-area">
+        <div class="hidden-hint" id="hh">Plays automatically — listen to the conversation, then the question is read aloud. Answer briefly right after. One timer for the whole question (${info.time}s).</div>
+      </div>
+      <div class="voice-tag" id="voiceTag">🔊 Playing conversation...</div>
+      <div class="dialogue" id="dialogueBox" style="display:none"></div>
+      <div class="hint-panel" id="hintPanel"></div>
+      <div class="feedback" id="fb"></div>`;
+    updateHintPanel(); // keep showing the previous item's hint until this one is actually played
+    // ONE countdown for the entire question — conversation playback, the
+    // spoken question, and speech capture all happen inside it. The
+    // question is read aloud (matches the real listening-only format) —
+    // it is never shown as on-screen text during the response window.
+    state.activateFn = ()=>{
+      startRing(info.time, ()=> finalizeSpeakingOnExpiry(item.answers[0], info));
+      let convOk = true;
+      speakSequential(item.lines, ()=>{
+        document.getElementById('dialogueBox').style.display='block';
+        document.getElementById('dialogueBox').innerHTML = item.lines.map(l=>{
+          const [sp, ...rest] = l.split(':');
+          return `<div class="ln"><span class="sp">${sp}:</span>${rest.join(':')}</div>`;
+        }).join('');
+        const vt = document.getElementById('voiceTag');
+        if(vt) vt.textContent = '❓ Question...';
+        state.lastPlayedItem = { en:`${item.question} → ${item.answers[0]}`, vi:item.vi };
+        updateHintPanel();
+        speak(item.question, status=>{ if(status!=='ok') convOk=false; applySpeechStatus('voiceTag', status); }, ()=>{
+          if(vt && convOk) vt.textContent = '';
+          beginSpeakingCapture(item.answers[0], info, undefined, item.answers);
+        });
+      }, status=>{
+        if(status!=='ok') convOk = false;
+        applySpeechStatus('voiceTag', status);
+      });
+    };
+  }
+
+  if(state.mode==='completion'){
+    card.innerHTML = `
+      <div class="mode-label">Sentence Completion · Reading</div>
+      ${ringHtml}
+      <div class="prompt-area">
+        <div class="sentence">${item.blankTpl}</div>
+        <div class="hidden-hint">Type the one word that best fits the blank</div>
+      </div>
+      <div class="prompt-area">
+        <input type="text" id="compInput" placeholder="Type one word..." autocomplete="off">
+        <div class="controls"><button class="btn" id="submitComp">Submit answer</button></div>
+      </div>
+      <div class="hint-panel" id="hintPanel"></div>
+      <div class="feedback" id="fb"></div>`;
+    state.lastPlayedItem = { en:item.blankTpl.replace('___', item.answers[0]), vi:item.vi };
+    updateHintPanel();
+    document.getElementById('compInput').focus();
+    document.getElementById('submitComp').onclick = ()=> submitCompletion(item, info, document.getElementById('compInput').value, false);
+    document.getElementById('compInput').addEventListener('keydown', e=>{ if(e.key==='Enter') submitCompletion(item, info, document.getElementById('compInput').value, false); });
+    state.activateFn = ()=> startRing(info.time, ()=> submitCompletion(item, info, null, true));
+  }
+
+  if(state.mode==='dictation'){
+    card.innerHTML = `
+      <div class="mode-label">Dictation · Listening + Writing</div>
+      ${ringHtml}
+      <div class="prompt-area">
+        <div class="hidden-hint" id="hh">Plays automatically — type exactly what you hear. One timer for the whole question (${info.time}s).</div>
+      </div>
+      <div class="voice-tag" id="voiceTag">🔊 Playing...</div>
+      <div class="prompt-area" id="typeArea" style="display:none">
+        <input type="text" id="typeInput" placeholder="Type what you just heard..." autocomplete="off">
+        <div class="controls"><button class="btn" id="submitType">Lock in answer</button></div>
+      </div>
+      <div class="hint-panel" id="hintPanel"></div>
+      <div class="feedback" id="fb"></div>`;
+    updateHintPanel(); // keep showing the previous sentence's hint until this one is actually played
+    // ONE countdown for the entire question — playback and typing both
+    // happen inside it. "Lock in answer" just records what's typed so far;
+    // it does not stop the clock. Whatever's captured (or typed live) when
+    // the timer hits 0 is what gets scored, then it moves on automatically.
+    state.activateFn = ()=>{
+      startRing(info.time, ()=>{
+        const typeArea = document.getElementById('typeArea');
+        const audioNeverFinished = !typeArea || typeArea.style.display === 'none';
+        const liveInput = document.getElementById('typeInput');
+        const val = state.captured !== null ? state.captured : (liveInput ? liveInput.value : null);
+        submitDictation(item, info, audioNeverFinished, val);
+      });
+      const v = speak(item.en, status=> applySpeechStatus('voiceTag', status), ()=>{
+        const typeArea = document.getElementById('typeArea');
+        if(typeArea) typeArea.style.display='flex';
+        const input = document.getElementById('typeInput');
+        if(input) input.focus();
+        const btn = document.getElementById('submitType');
+        if(btn) btn.onclick = ()=>{
+          state.captured = input ? input.value : '';
+          btn.disabled = true;
+          if(input) input.disabled = true;
+          const fb = document.getElementById('fb');
+          if(fb){ fb.textContent = 'Answer locked in — waiting for timer...'; fb.className = 'feedback'; }
+        };
+      });
+      const vt = document.getElementById('voiceTag');
+      if(vt) vt.textContent = v ? `🔊 ${v.lang} — ${v.name}` : '🔊 default browser voice';
+      state.lastPlayedItem = { en:item.en, vi:item.vi };
+      updateHintPanel();
+    };
+  }
+
+  if(state.mode==='passage'){
+    card.innerHTML = `
+      <div class="mode-label">Passage Reconstruction · Reading + Writing</div>
+      ${ringHtml}
+      <div class="hidden-hint" id="hh">Read the passage carefully for ${info.time} seconds — it will then disappear</div>
+      <div class="passage-box" id="passageBox">${item.en}</div>
+      <div class="hint-panel" id="hintPanel"></div>
+      <div class="feedback" id="fb"></div>`;
+    state.lastPlayedItem = { en:item.en, vi:item.vi, summary:item.summary, summaryVi:item.summaryVi };
+    updateHintPanel();
+    state.activateFn = ()=> startRing(info.time, ()=> startPassageWriting(item, info));
+  }
+
+  // Pause overlay — re-created fresh on every render since card.innerHTML
+  // above just wiped out any previous one. Blocks all interaction with the
+  // card (ring, buttons, chunk clicks, typing) until the session is
+  // actually running (audio checks passed + Start pressed + not paused).
+  const overlay = document.createElement('div');
+  overlay.className = 'pause-overlay';
+  overlay.id = 'pauseOverlay';
+  overlay.innerHTML = state.running
+    ? `<div class="pause-overlay-inner">⏸ Paused<span>Tap to continue</span></div>`
+    : `<div class="pause-overlay-inner">▶ Ready<span>Complete the 3 audio checks above, then tap Start Session</span></div>`;
+  overlay.onclick = ()=> toggleSession();
+  card.appendChild(overlay);
+
+  if(state.running && !state.paused && state.activateFn){
+    state.activateFn();
+  }
+  syncPauseOverlay();
+}
+
+function updateHintPanel(){
+  const panel = document.getElementById('hintPanel');
+  if(!panel) return;
+  panel.classList.toggle('open', state.hintOpen);
+  const wrap = state.lastPlayedItem;
+  if(!wrap){
+    panel.innerHTML = `<div class="hp-row" style="color:var(--muted)">No item to reference yet.</div>`;
+    return;
+  }
+  panel.innerHTML = `
+    <div class="hp-row"><span class="hp-tag">EN</span>${wrap.en}</div>
+    <div class="hp-row"><span class="hp-tag">VI</span>${wrap.vi}</div>` +
+    (wrap.summary ? `
+    <div class="divider" style="margin:8px 0"></div>
+    <div class="hp-row"><span class="hp-tag">SUMMARY</span>${wrap.summary}</div>
+    <div class="hp-row"><span class="hp-tag">TÓM TẮT</span>${wrap.summaryVi}</div>` : '');
+}
+
+function submitCompletion(item, info, typed, timedOut){
+  clearTimers();
+  try{
+    const val = normWord(typed);
+    const correct = !timedOut && item.answers.some(a=> normWord(a)===val);
+    recordScore('reading', correct);
+    const fb = document.getElementById('fb');
+    if(fb){
+      fb.className = 'feedback ' + (correct ? 'ok':'bad');
+      fb.textContent = timedOut ? `⏱ Time's up. Answer: "${item.answers[0]}"` : (correct ? '✓ Correct!' : `✗ Incorrect. Answer: "${item.answers[0]}"`);
+    }
+    const btn = document.getElementById('submitComp');
+    if(btn) btn.disabled = true;
+  }catch(err){ console.error('[V4SE] submitCompletion error:', err); }
+  setTimeout(nextQuestion, 1600);
+}
+
+function submitDictation(item, info, timedOut, typedValue){
+  clearTimers();
+  try{
+    const fallback = document.getElementById('typeInput');
+    const val = timedOut ? '' : (typedValue != null ? typedValue : (fallback ? fallback.value : ''));
+    const acc = accuracy(item.en, val);
+    const good = acc >= 0.85;
+    recordScore('listening', good);
+    recordScore('writing', good);
+    const fb = document.getElementById('fb');
+    if(fb){
+      fb.className = 'feedback ' + (good ? 'ok':'bad');
+      fb.textContent = timedOut ? `⏱ Time's up. Correct sentence: "${item.en}"` : `${good? '✓ Pass':'✗ Not yet'} — match ${Math.round(acc*100)}% · Correct sentence: "${item.en}"`;
+    }
+  }catch(err){ console.error('[V4SE] submitDictation error:', err); }
+  setTimeout(nextQuestion, 1800);
+}
+
+// Records whatever is heard/self-reported into state.captured for the
+// question's single countdown (started back in renderQuestion) to pick up
+// when it expires. Does NOT touch the timer and does NOT advance the
+// question itself — only that one countdown does that, per question.
+function beginSpeakingCapture(targetText, info, buildCorrect, acceptList, silenceMs){
+  const fb = document.getElementById('fb');
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if(SR){
+    if(fb){ fb.textContent = '🎙 Listening...'; fb.className = 'feedback'; }
+    ensureMicPermission(()=>{
+      try{
+        const rec = new SR();
+        state.recognition = rec;
+        rec.lang='en-US'; rec.interimResults=false; rec.maxAlternatives=1;
+        let speechStarted = false;
+        if(silenceMs){
+          // Versant Part A rule: the candidate must start speaking within
+          // silenceMs of the prompt ending, even though the full response
+          // window (info.time) is longer — auto-advance early if still
+          // silent when this fires.
+          state.silenceTimer = setTimeout(()=>{
+            if(!speechStarted){ try{rec.stop();}catch(e){} finalizeSpeakingOnExpiry(targetText, info); }
+          }, silenceMs);
+        }
+        rec.onspeechstart = ()=>{ speechStarted = true; clearTimeout(state.silenceTimer); state.silenceTimer=null; };
+        rec.onresult = (e)=>{
+          const said = e.results[0][0].transcript;
+          state.captured = { said, buildCorrect, acceptList };
+          releaseSharedMic();
+          if(fb){ fb.textContent = `Heard: "${said}" — locked in, waiting for timer...`; fb.className = 'feedback'; }
+        };
+        rec.onerror = ()=>{ clearTimeout(state.silenceTimer); state.silenceTimer=null; showSelfReport(targetText, info, buildCorrect, acceptList); };
+        rec.onend = ()=> releaseSharedMic();
+        rec.start();
+      }catch(e){ showSelfReport(targetText, info, buildCorrect, acceptList); }
+    }, ()=> showSelfReport(targetText, info, buildCorrect, acceptList));
+    return;
+  }
+  showSelfReport(targetText, info, buildCorrect, acceptList);
+}
+
+function showSelfReport(targetText, info, buildCorrect, acceptList){
+  const fb = document.getElementById('fb');
+  if(!fb) return;
+  fb.innerHTML = `Your browser doesn't support speech recognition — say the sentence aloud, then self-check:<br>
+    <div class="controls" style="margin-top:8px">
+      <button class="btn" id="selfOk">✓ I said it correctly</button>
+      <button class="btn secondary" id="selfBad">✗ I said it wrong</button>
+    </div>`;
+  const lock = (said)=>{
+    state.captured = { said, buildCorrect, acceptList };
+    fb.innerHTML = said ? '✓ Marked correct — waiting for timer...' : '✗ Marked wrong — waiting for timer...';
+  };
+  document.getElementById('selfOk').onclick = ()=> lock(targetText);
+  document.getElementById('selfBad').onclick = ()=> lock('');
+}
+
+// Called only from a question's single countdown when it hits 0. Reads
+// whatever beginSpeakingCapture/showSelfReport recorded (or null if the
+// user never got a result in time) and finalizes scoring + advances.
+function finalizeSpeakingOnExpiry(targetText, info){
+  const c = state.captured;
+  finishSpeaking(targetText, info, c ? c.said : null, c ? c.buildCorrect : undefined, !c, c ? c.acceptList : undefined);
+}
+
+function finishSpeaking(targetText, info, said, buildCorrect, timedOut, acceptList){
+  clearTimers();
+  releaseSharedMic();
+  try{
+    let acc = 0;
+    if(said!==null){
+      if(acceptList && acceptList.length){
+        acc = Math.max(...acceptList.map(a=> accuracy(a, said)));
+      } else {
+        acc = accuracy(targetText, said);
+      }
+    }
+    let good = acc >= 0.6;
+    if(buildCorrect === false) good = false;
+    recordScore(info.skill, good && !timedOut);
+    const fb = document.getElementById('fb');
+    if(fb){
+      fb.className = 'feedback ' + (good && !timedOut ? 'ok':'bad');
+      fb.textContent = timedOut ? '⏱ Time\'s up.' : (said ? `You said: "${said}" — match ${Math.round(acc*100)}%` : '✗ Not recognized / incorrect.');
+    }
+  }catch(err){ console.error('[V4SE] finishSpeaking error:', err); }
+  setTimeout(nextQuestion, 3000);
+}
+
+function startPassageWriting(item, info){
+  document.getElementById('passageBox').style.display='none';
+  const card = document.getElementById('card');
+  const html = `
+    <div class="mode-label">Passage Reconstruction · Reading + Writing</div>
+    ${ringHtmlFor({ring:info.ring, time:info.writeTime})}
+    <div class="hidden-hint">The passage is now hidden — reconstruct it in your own words within ${info.writeTime} seconds</div>
+    <div class="prompt-area">
+      <textarea id="passageInput" placeholder="Reconstruct the passage in your own words..."></textarea>
+    </div>
+    <div class="controls"><button class="btn" id="submitPassage">Submit</button></div>
+    <div class="hint-panel" id="hintPanel"></div>
+    <div class="feedback" id="fb"></div>`;
+  card.innerHTML = html;
+  updateHintPanel();
+  document.getElementById('passageInput').focus();
+  startRing(info.writeTime, ()=> finishPassage(item, info, true));
+  document.getElementById('submitPassage').onclick = ()=> finishPassage(item, info, false);
+}
+
+function finishPassage(item, info, timedOut){
+  clearTimers();
+  const val = timedOut ? (document.getElementById('passageInput')?.value || '') : document.getElementById('passageInput').value;
+  const card = document.getElementById('card');
+  card.innerHTML = `
+    <div class="mode-label">Passage Reconstruction · Self-check</div>
+    <div class="hidden-hint">Compare your writing with the original passage — content doesn't need to match word for word, just capture the main ideas.</div>
+    <div class="passage-box"><b>Original passage:</b><br>${item.en}</div>
+    <div class="passage-box"><b>You wrote:</b><br>${val ? val.replace(/</g,'&lt;') : '<i>(no content)</i>'}</div>
+    <div class="controls">
+      <button class="btn" id="selfOkP">✓ Captured the main ideas</button>
+      <button class="btn secondary" id="selfBadP">✗ Missing a lot</button>
+    </div>
+    <div class="hint-panel" id="hintPanel"></div>
+    <div class="feedback" id="fb">${timedOut ? "⏱ Time's up." : ''}</div>`;
+  updateHintPanel();
+  document.getElementById('selfOkP').onclick = ()=>{ recordScore('reading', true); recordScore('writing', true); nextQuestion(); };
+  document.getElementById('selfBadP').onclick = ()=>{ recordScore('reading', false); recordScore('writing', false); nextQuestion(); };
+}
+
+function renderSummary(){
+  const info = MODE_INFO[state.mode];
+  const s = scores[info.skill];
+  const pct = s.total ? Math.round(100*s.correct/s.total) : 0;
+  document.getElementById('card').innerHTML = `
+    <div class="summary">
+      <div class="mode-label">${info.label} · Round complete</div>
+      <h2>${info.label} skill result</h2>
+      <div class="big">${pct}%</div>
+      <div class="hidden-hint">${s.correct}/${s.total} correct since the start of this session (cumulative)</div>
+      <div class="controls" style="margin-top:16px">
+        <button class="btn" id="replay">↺ Replay this round</button>
+      </div>
+    </div>`;
+  document.getElementById('progressDots').innerHTML='';
+  document.getElementById('replay').onclick = ()=> switchMode(state.mode);
+}
+
+// ================== VERSANT EXAM — full timed simulation ==================
+function startExam(){
+  clearTimers();
+  examStartSnapshot = JSON.parse(JSON.stringify(scores));
+  if(examResultData){ examResultData = null; renderSkillsBar(); } // show live cumulative % again while this attempt runs
+  state.examActive = true;
+  state.examSeqIdx = 0;
+  document.querySelectorAll('.tab[data-mode]').forEach(t=>t.classList.remove('active'));
+  document.getElementById('examTab').classList.add('active');
+  loadExamPart();
+}
+
+function loadExamPart(){
+  const part = EXAM_SEQUENCE[state.examSeqIdx];
+  state.mode = part.mode;
+  state.order = shuffledIndices(part.mode, part.count);
+  state.idx = 0;
+  updateExamBanner();
+  renderQuestion();
+}
+
+function updateExamBanner(){
+  const part = EXAM_SEQUENCE[state.examSeqIdx];
+  const info = MODE_INFO[part.mode];
+  const banner = document.getElementById('examBanner');
+  banner.style.display = 'block';
+  banner.textContent = `🎓 V4SE EXAM — Part ${state.examSeqIdx+1}/${EXAM_SEQUENCE.length}: ${info.label} (${part.count} questions)`;
+}
+
+function advanceExamPart(){
+  state.examSeqIdx++;
+  if(state.examSeqIdx >= EXAM_SEQUENCE.length){ renderExamSummary(); return; }
+  loadExamPart();
+}
+
+function renderExamSummary(){
+  state.examActive = false;
+  document.getElementById('examBanner').style.display = 'none';
+  document.getElementById('examTab').classList.remove('active');
+  const labels = {speaking:'🗣 Speaking', listening:'👂 Listening', reading:'📖 Reading', writing:'✍️ Writing'};
+  const skills = ['speaking','listening','reading','writing'];
+  let totalCorrect=0, totalCount=0;
+  const deltas = {};
+  const rows = skills.map(key=>{
+    const before = examStartSnapshot ? examStartSnapshot[key] : {correct:0,total:0};
+    const after = scores[key];
+    const dCorrect = after.correct - before.correct;
+    const dTotal = after.total - before.total;
+    deltas[key] = { correct: dCorrect, total: dTotal };
+    totalCorrect += dCorrect; totalCount += dTotal;
+    const pct = dTotal ? Math.round(100*dCorrect/dTotal) : 0;
+    return `<div class="exam-row-stat"><span>${labels[key]}</span><span>${dTotal ? pct+'%' : '—'} (${dCorrect}/${dTotal})</span></div>`;
+  }).join('');
+  const overallPct = totalCount ? Math.round(100*totalCorrect/totalCount) : 0;
+  // Switch the top skills bar from cumulative % to this exam attempt's own
+  // raw score (e.g. "13/16") plus its own CEFR estimate, per request.
+  examResultData = deltas;
+  renderSkillsBar();
+  document.getElementById('card').innerHTML = `
+    <div class="summary">
+      <div class="mode-label">V4SE EXAM · Full simulation complete</div>
+      <h2>Overall exam result</h2>
+      <div class="big">${overallPct}%</div>
+      <div class="hidden-hint">${totalCorrect}/${totalCount} correct across all 6 parts (this exam attempt)</div>
+      <div class="exam-breakdown">${rows}</div>
+      <div class="controls" style="margin-top:16px">
+        <button class="btn" id="retakeExam">↺ Retake Exam</button>
+        <button class="btn secondary" id="backToPractice">← Back to Practice</button>
+      </div>
+    </div>`;
+  document.getElementById('progressDots').innerHTML='';
+  document.getElementById('retakeExam').onclick = ()=> startExam();
+  document.getElementById('backToPractice').onclick = ()=> switchMode('repeat');
+}
+
+document.querySelectorAll('.tab[data-mode]').forEach(t=>{
+  t.addEventListener('click', ()=> switchMode(t.dataset.mode));
+});
+
+document.getElementById('hintTab').addEventListener('click', ()=>{
+  state.hintOpen = !state.hintOpen;
+  document.getElementById('hintTab').classList.toggle('on', state.hintOpen);
+  updateHintPanel();
+});
+
+document.getElementById('examTab').addEventListener('click', ()=> startExam());
+
+document.getElementById('testSoundBtn').addEventListener('click', ()=>{
+  const msg = document.getElementById('soundCheckMsg');
+  document.getElementById('soundConfirm').style.display = 'flex';
+  msg.textContent = '🔄 Testing sound...';
+  speak('This is a test. Can you hear this sentence?', (status, detail)=>{
+    if(status==='ok') msg.textContent = '✅ Sound is working on this device.';
+    else if(status==='unsupported') msg.textContent = '❌ This browser has no text-to-speech support — please use Chrome or Edge.';
+    else if(status==='error'){
+      const hint = detail ? ` (${detail})` : '';
+      msg.textContent = `⚠️ Speech error${hint} — if this app is open in more than one browser tab, close the extra tabs (they fight over the shared speech engine). Otherwise check system volume or try Chrome/Edge.`;
+    }
+    else if(status==='silent') msg.textContent = '⚠️ Still no sound after retrying — check: (1) system volume + correct output device selected, (2) this browser tab isn\'t muted, (3) Windows Settings → Time & Language → Speech → Manage voices has an English voice installed. Then tap Test Sound again.';
+  });
+});
+
+document.getElementById('testMicBtn').addEventListener('click', ()=>{
+  const msg = document.getElementById('micCheckMsg');
+  document.getElementById('micConfirm').style.display = 'flex';
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR){
+    msg.textContent = '❌ This browser has no speech-recognition support — Repeat/Sentence Build will use the manual self-check fallback instead (you still speak aloud, then mark ✓/✗ yourself).';
+    return;
+  }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    msg.textContent = '❌ This browser cannot access a microphone at all here.';
+    return;
+  }
+  msg.textContent = '🎙 Requesting microphone access...';
+  ensureMicPermission(()=>{
+    msg.textContent = '🎙 Listening... say a short sentence now (e.g. "This is a microphone test")';
+    try{
+      const rec = new SR();
+      rec.lang = 'en-US'; rec.interimResults = false; rec.maxAlternatives = 1;
+      let done = false;
+      let audioStarted = false; // mic stream/hardware connected at all
+      let soundStarted = false; // some audio volume was detected (could be noise, not necessarily speech)
+      const finish = ()=>{ if(done) return; done = true; };
+      rec.onaudiostart = ()=>{ audioStarted = true; };
+      rec.onsoundstart = ()=>{ soundStarted = true; };
+      rec.onresult = (e)=>{
+        finish();
+        const said = e.results[0][0].transcript;
+        msg.textContent = `✅ Microphone is working — heard: "${said}"`;
+      };
+      rec.onerror = (e)=>{
+        finish();
+        const reason = e && e.error;
+        if(reason === 'not-allowed' || reason === 'service-not-allowed'){
+          msg.textContent = '❌ Microphone access was blocked — click the 🔒/ⓘ icon in the address bar and allow microphone for this file, then try again.';
+        } else if(reason === 'network'){
+          msg.textContent = '❌ Network error reaching the speech-recognition service — this needs internet access to Google\'s servers; if this network/firewall blocks it, automatic mic scoring won\'t work here (the app already falls back to manual self-check, so practice still works — you just mark ✓/✗ yourself).';
+        } else if(reason === 'no-speech'){
+          if(audioStarted && !soundStarted){
+            msg.textContent = '⚠️ Mic connected, but no audio volume detected at all — this usually means Windows is using a DIFFERENT microphone than your headset (e.g. built-in laptop mic). Check Windows Settings → System → Sound → Input, set your headset as the input device, then try again.';
+          } else if(audioStarted && soundStarted){
+            msg.textContent = '⚠️ Mic picked up some sound but not recognizable speech — try speaking closer to the mic, a bit louder, right after tapping the button, then try again.';
+          } else {
+            msg.textContent = '⚠️ No speech detected — check your headset mic is the selected input device in Windows Sound settings, then try again and speak right after tapping.';
+          }
+        } else if(reason === 'audio-capture'){
+          msg.textContent = '❌ No microphone found — check your headset is plugged in / selected as the default recording device in Windows.';
+        } else {
+          msg.textContent = `⚠️ Microphone error (${reason || 'unknown'}) — try again, or check Windows Sound settings for your headset mic.`;
+        }
+      };
+      rec.onend = ()=>{ finish(); releaseSharedMic(); };
+      rec.start();
+    }catch(e){
+      msg.textContent = '❌ Could not start the microphone — try again, or check Windows Sound settings for your headset mic.';
+    }
+  }, ()=>{
+    msg.textContent = '❌ Microphone access was blocked or denied — click the 🔒/ⓘ icon in the address bar to allow microphone for this file, then try again.';
+  });
+});
+
+// Raw signal-level meter, bypassing Google's speech-recognition service
+// entirely. This measures actual audio arriving in the browser from the
+// selected mic — useful to tell apart "Bluetooth headset mic isn't sending
+// any signal to Windows/the browser" (hardware/OS/Bluetooth issue) from
+// "signal arrives fine but the online recognizer fails" (network issue).
+document.getElementById('micLevelBtn').addEventListener('click', ()=>{
+  const msg = document.getElementById('micLevelMsg');
+  document.getElementById('levelConfirm').style.display = 'flex';
+  const fill = document.getElementById('micLevelFill');
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    msg.textContent = '❌ This browser cannot access a microphone here.';
+    return;
+  }
+  msg.textContent = '🎚 Measuring for 5s — speak into your mic now...';
+  ensureMicPermission(()=>{
+  const stream = sharedMicStream;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AC();
+    const source = ctx.createMediaStreamSource(stream);
+    const analyser = ctx.createAnalyser();
+    analyser.fftSize = 512;
+    source.connect(analyser);
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    let maxLevel = 0;
+    const start = Date.now();
+    function tick(){
+      analyser.getByteTimeDomainData(data);
+      let sum = 0;
+      for(let i=0;i<data.length;i++){ const v = (data[i]-128)/128; sum += v*v; }
+      const rms = Math.sqrt(sum/data.length);
+      maxLevel = Math.max(maxLevel, rms);
+      fill.style.width = Math.min(100, rms*400) + '%';
+      if(Date.now()-start < 5000){
+        requestAnimationFrame(tick);
+      } else {
+        ctx.close();
+        releaseSharedMic();
+        fill.style.width = '0%';
+        const peakPct = Math.round(Math.min(100, maxLevel*400));
+        if(maxLevel < 0.02){
+          msg.textContent = `⚠️ Peak level: ${peakPct}% — essentially silent. The browser isn't receiving any real signal from this mic. Bluetooth headsets are a common cause: Windows has to switch the headset from music-quality mode to call-quality mode to enable the mic, and that switch sometimes fails to deliver audio to apps. Try: open the Headset row in Windows Sound settings and check if ITS built-in "Test your microphone" bar also stays flat; if so, try a wired mic, or re-pair the Bluetooth headset.`;
+        } else if(maxLevel < 0.08){
+          msg.textContent = `⚠️ Peak level: ${peakPct}% — very low but not zero. Try talking louder/closer to the mic, or raise the mic input level/boost in Windows Sound settings → Headset → Levels.`;
+        } else {
+          msg.textContent = `✅ Peak level: ${peakPct}% — the browser IS receiving real audio from your mic. If speech still isn't recognized, it's most likely the online recognizer (needs internet to Google's servers) rather than the mic itself — the app's manual self-check fallback still works fine in that case.`;
+        }
+      }
+    }
+    tick();
+  }, ()=>{
+    msg.textContent = '❌ Could not access the microphone — permission denied or no mic available.';
+  });
+});
+
+// Each audio check needs an explicit self-confirmed ✓ Đạt / ✗ Chưa đạt —
+// running the test once isn't enough on its own. Đạt on all 3 is what
+// unlocks the Start Session button (see syncSessionControls/toggleSession).
+function wireCheckConfirm(okId, badId, key){
+  const okBtn = document.getElementById(okId);
+  const badBtn = document.getElementById(badId);
+  if(!okBtn || !badBtn) return;
+  okBtn.addEventListener('click', ()=>{
+    state.checklist[key] = true;
+    okBtn.classList.add('selected'); badBtn.classList.remove('selected');
+    syncSessionControls();
+  });
+  badBtn.addEventListener('click', ()=>{
+    state.checklist[key] = false;
+    badBtn.classList.add('selected'); okBtn.classList.remove('selected');
+    syncSessionControls();
+  });
+}
+wireCheckConfirm('soundOk', 'soundBad', 'sound');
+wireCheckConfirm('micOk', 'micBad', 'mic');
+wireCheckConfirm('levelOk', 'levelBad', 'level');
+
+document.getElementById('sessionToggleBtn').addEventListener('click', toggleSession);
+
+function initApp(){
+  renderSkillsBar();
+  syncSessionControls();
+  switchMode('repeat');
+}
+
+// ================== Access lock ==================
+// NOTE: this is a lightweight client-side gate for a private, single-file
+// training app — the password below is visible to anyone who views the
+// page source. It stops casual/accidental access, not a determined user.
+const ACCESS_PASSWORD = "versantb1";
+const UNLOCK_KEY = "versant_b1_unlocked";
+
+function unlockApp(){
+  document.getElementById('lockScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = 'block';
+  warmUpSpeech();
+  initApp();
+}
+
+function tryUnlock(){
+  const val = document.getElementById('lockInput').value;
+  if(val === ACCESS_PASSWORD){
+    try{ localStorage.setItem(UNLOCK_KEY, 'yes'); }catch(e){}
+    unlockApp();
+  } else {
+    document.getElementById('lockError').textContent = 'Incorrect password. Please try again.';
+    document.getElementById('lockInput').value = '';
+    document.getElementById('lockInput').focus();
+  }
+}
+
+document.getElementById('lockSubmit').addEventListener('click', tryUnlock);
+document.getElementById('lockInput').addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+
+let alreadyUnlocked = false;
+try{ alreadyUnlocked = localStorage.getItem(UNLOCK_KEY) === 'yes'; }catch(e){}
+if(alreadyUnlocked){
+  unlockApp();
+} else {
+  document.getElementById('lockInput').focus();
+}
+</script>
+</body>
+</html>
